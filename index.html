@@ -1,0 +1,499 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stream DZ</title><script src="hls.min.js"></script><style>
+:root{--bg:#0a0e1a;--card:#121a2e;--card2:#1a2440;--acc:#6c8cff;--acc2:#2fd8c4;--txt:#eef2ff;--mut:#8b96b8;--onacc:#06101f;--g1:#1d2a63;--g2:#0f3d4a}
+body[data-theme=dz]{--bg:#04180f;--card:#0b2c1d;--card2:#13422c;--acc:#0f9d58;--acc2:#d21034;--txt:#fff;--mut:#9fc7b2;--onacc:#fff;--g1:#0f6b3a;--g2:#7a0f22}
+body[data-theme=cinema]{--bg:#0a0a0a;--card:#161616;--card2:#242424;--acc:#e50914;--acc2:#b20710;--txt:#fff;--mut:#9a9a9a;--onacc:#fff;--g1:#3a0a0d;--g2:#1a1a1a}
+body[data-theme=video]{--bg:#0f0f0f;--card:#1c1c1c;--card2:#2b2b2b;--acc:#f1f1f1;--acc2:#ffffff;--txt:#f1f1f1;--mut:#aaa;--onacc:#0f0f0f;--g1:#262626;--g2:#1a1a1a}
+body[data-theme=video] .ch .bd,body[data-theme=video] #cnt{color:#ff4e45}
+.src{width:auto!important;padding:9px 20px!important;margin:0!important;border-radius:999px!important;background:var(--card2)}
+#dlg{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:200}
+#dlg.open{display:flex}
+.box{width:min(580px,92vw);max-height:92vh;overflow:auto;background:var(--card);border-radius:24px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.box h3{margin-bottom:12px;font-size:20px}
+.row{display:flex;gap:10px;margin-top:10px}.row button{flex:1}
+#dok{background:linear-gradient(90deg,var(--acc),var(--acc2));color:var(--onacc)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:radial-gradient(1100px 520px at 85% -10%,var(--g1) 0,transparent 62%),radial-gradient(800px 420px at 0% 110%,var(--g2) 0,transparent 60%),var(--bg);color:var(--txt);height:100vh;display:flex;flex-direction:column;overflow:hidden;font:16px/1.45 "Segoe UI",Roboto,"Noto Sans Arabic","Noto Kufi Arabic",system-ui,sans-serif}
+#top{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;flex:none}
+#top b{font-size:22px;letter-spacing:1px;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+#top small{color:var(--mut);font-size:13px}
+#cnt{background:var(--card2);padding:5px 14px;border-radius:999px;font-size:13px;color:var(--acc2)}
+#tabs{padding:2px 16px 8px;flex:none;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tab{padding:9px 20px;border-radius:999px;background:var(--card);color:var(--mut);cursor:pointer;font-size:15px;font-weight:600;border:2px solid transparent}
+.tab.on{background:linear-gradient(90deg,var(--acc),var(--acc2));color:var(--onacc)}
+#main{flex:1;display:flex;gap:14px;padding:6px 16px 16px;overflow:hidden;min-height:0}
+#left{width:270px;background:var(--card);border-radius:20px;padding:12px;overflow:auto}
+#center{flex:1;background:#000;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;min-width:0;box-shadow:0 10px 40px rgba(0,0,0,.55)}
+#right{width:340px;background:var(--card);border-radius:20px;display:flex;flex-direction:column;overflow:hidden}
+h4{font-size:12px;color:var(--mut);margin:12px 4px 4px;letter-spacing:.5px}
+input{width:100%;padding:11px 14px;margin:4px 0;border-radius:12px;border:2px solid transparent;background:var(--card2);color:var(--txt);font-size:14px;outline:none}
+input::placeholder{color:#66719a}
+input:focus{border-color:var(--acc)}
+button{width:100%;padding:11px;margin:4px 0;background:var(--card2);border:2px solid transparent;border-radius:12px;color:var(--txt);font-weight:700;font-size:14px;cursor:pointer}
+#fb{background:linear-gradient(90deg,var(--acc),var(--acc2));color:var(--onacc)}
+#s{width:170px;display:inline-block;margin:0;border-radius:999px;padding:9px 18px}
+.ch{padding:14px 16px;margin:3px 8px;border-radius:14px;cursor:pointer;font-size:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;color:#cfd6f0;transition:transform .12s}
+.ch .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch .bd{font-size:11px;color:var(--acc2)}
+.ch.focus{background:linear-gradient(90deg,var(--acc),var(--acc2));color:var(--onacc);font-weight:700;transform:scale(1.03);box-shadow:0 6px 22px rgba(108,140,255,.45)}
+.ch.focus .bd{color:var(--onacc)}
+.nf{outline:3px solid #ffd54f;outline-offset:2px}
+#list{flex:1;overflow:auto;padding:8px 0}
+#empty{padding:30px 20px;color:var(--mut);font-size:14px;text-align:center}
+#vid{flex:1;width:100%;min-height:0;background:#000}
+#info{padding:12px 18px;background:linear-gradient(180deg,#0d1424,#0a0f1d);font-size:14px;color:#b9c3e6;flex:none}
+#cur{position:fixed;z-index:99999;width:24px;height:24px;margin:-12px 0 0 -12px;border:3px solid #ffd54f;border-radius:50%;background:rgba(255,213,79,.3);pointer-events:none;display:none;left:50%;top:50%}
+#log{color:var(--acc2);font-size:12px;margin-top:8px;max-height:70px;overflow:auto;word-break:break-word;padding:0 4px}
+#log.err{color:#ff6b6b}
+#groups{width:200px;background:var(--card);border-radius:20px;overflow:auto;padding:8px 0}
+.g{padding:12px 14px;margin:3px 8px;border-radius:12px;color:var(--mut);display:flex;justify-content:space-between;gap:6px;cursor:pointer;font-size:15px}
+.g .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g.sel{color:var(--txt);background:var(--card2)}
+.g.focus{background:linear-gradient(90deg,var(--acc),var(--acc2));color:var(--onacc);font-weight:700}
+.ch .no{width:34px;color:var(--mut);font-size:13px;text-align:center}
+.ch .lg{width:40px;height:40px;border-radius:8px;object-fit:contain;background:#0b1224}
+.ch.focus .no{color:var(--onacc)}
+#right{width:400px}
+body.fs #top,body.fs #tabs,body.fs #left,body.fs #groups,body.fs #right{display:none}
+body.fs #main{padding:0}
+body.fs #center{position:fixed;inset:0;border-radius:0;z-index:50}
+body.fs #info{position:absolute;bottom:0;left:0;right:0;opacity:0;transition:opacity .3s;font-size:22px;padding:22px 30px}
+body.fs #info.show{opacity:1}
+@media(max-width:900px){#main{flex-direction:column}#left,#groups,#right{width:100%;max-height:34%}#center{min-height:30%}}
+</style></head><body>
+<div id="top"><b>STREAM DZ</b><small>خفيف لـ Stream</small><span id="cnt">0 قناة</span></div>
+<div id="tabs"><span class="tab on" data-nav data-t="live">مباشر</span><span class="tab" data-nav data-t="movie">أفلام</span><span class="tab" data-nav data-t="series">مسلسل</span><span class="tab" data-nav data-t="radio">راديو</span><input id="s" data-nav placeholder="بحث..."><button class="src" id="bM" data-nav>M3U</button><button class="src" id="bX" data-nav>Xtream</button><button class="src" id="bS" data-nav>Stalker</button><button class="src" id="bT" data-nav>الإعدادات</button></div>
+<div id="main">
+<div id="groups"><div id="gitems"></div></div>
+<div id="right"><div id="list"><div id="items"></div><div id="empty">لا توجد قنوات — حمّل ملفاً أو رابطاً أو سجّل Xtream</div></div></div>
+<div id="center"><video id="vid" controls autoplay playsinline></video><div id="info">Stream DZ جاهز • ↑↓ تنقل • OK تشغيل • ←→ للتبديل بين القائمة واللوحة</div></div>
+</div>
+<div id="dlg"><div class="box"><h3 id="dt"></h3>
+<div class="form" id="f-m3u"><button id="fb" data-d>فتح ملف TXT/M3U</button><input type="file" id="f" hidden accept=".txt,.m3u,.m3u8"><input id="mU" data-d placeholder="رابط M3U http://..."></div>
+<div class="form" id="f-xt"><input id="xH" data-d placeholder="Host http://...:8080"><input id="xU" data-d placeholder="User"><input id="xP" data-d placeholder="Pass"></div>
+<div class="form" id="f-st"><input id="stP" data-d placeholder="Portal http://.../c/"><input id="stM" data-d placeholder="MAC 00:1A:79:xx:xx:xx"><input id="stPath" data-d placeholder="مسار API (اختياري) /stalker_portal/server/load.php"></div>
+<div class="form" id="f-set"><button id="thB" data-d>التيمة</button><button id="engB" data-d>المشغّل</button><button id="msB" data-d>وضع الماوس: إيقاف</button><button id="clB" data-d>مسح البيانات المحفوظة</button></div>
+<div class="row"><button id="dok" data-d>موافق</button><button id="dno" data-d>إلغاء</button></div>
+<div id="log"></div></div></div>
+<div id="cur"></div>
+<script>
+const $=id=>document.getElementById(id),PAGE=350,UA='Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp ver: 2 rev: 250 Safari/533.3';
+let GS=[],grp='',gi=0,fs=false,eng='auto',H=null,A=[],V=[],CAT='live',fi=0,shown=0,query='',sub=null,X=null,S=null,tok=0,zone='list',pi=0,cntN=0;
+const L=$('items'),v=$('vid');
+function val(id){return $(id).value}
+function info(t){$('info').textContent=t}
+function msg(t,bad){const l=$('log');l.textContent=t;l.className=bad?'err':'';if(!bad)info(t)}
+// ---------- بيانات ----------
+function compute(){
+  const q=query.trim().toLowerCase();
+  const base=sub?sub.items:A.filter(x=>x.t===CAT);
+  const gc={};base.forEach(x=>{if(x.g)gc[x.g]=(gc[x.g]||0)+1});GS=Object.keys(gc).map(k=>[k,gc[k]]);
+  if(grp&&!gc[grp])grp='';
+  const b2=(grp&&!sub)?base.filter(x=>x.g===grp):base;
+  const r=q?b2.filter(x=>(x.l||(x.l=x.n.toLowerCase())).includes(q)):b2;
+  cntN=r.length;
+  V=sub?[{n:'⬅ رجوع',back:1}].concat(r):r;
+}
+function refresh(){
+  compute();
+  $('cnt').textContent=cntN+' قناة';
+  renderGroups();L.textContent='';shown=0;appendMore();
+  $('empty').style.display=V.length?'none':'block';
+  if(fi>=V.length)fi=Math.max(0,V.length-1);
+  while(fi>=shown&&shown<V.length)appendMore();
+  markFocus();
+}
+function renderGroups(){
+  const G=$('gitems');G.textContent='';
+  [['',A.filter(x=>sub?false:x.t===CAT).length]].concat(GS).forEach(([k,c],i)=>{
+    const d=document.createElement('div'),a=document.createElement('span'),b=document.createElement('span');
+    d.className='g'+(k===grp?' sel':'');a.className='nm';a.textContent=k||'الكل';b.textContent=c;b.style.fontSize='12px';
+    d.appendChild(a);d.appendChild(b);d.onclick=()=>{grp=k;gi=i;fi=0;refresh()};G.appendChild(d);
+  });
+  if(GS.length===0)$('groups').style.display='none';else $('groups').style.display='';
+  markG();
+}
+function markG(){const it=$('gitems').children;for(let i=0;i<it.length;i++)it[i].classList.toggle('focus',zone==='groups'&&i===gi)}
+function badge(c){return c.back?'':c.kind==='series'?'▸':c.t==='live'?'●':c.t==='movie'?'فيلم':c.t==='radio'?'راديو':''}
+function appendMore(){
+  const end=Math.min(V.length,shown+PAGE),fr=document.createDocumentFragment();
+  for(let i=shown;i<end;i++){
+    const c=V[i],d=document.createElement('div'),a=document.createElement('span'),b=document.createElement('span');
+    d.className='ch';a.className='nm';b.className='bd';
+    a.textContent=c.n;b.textContent=badge(c);
+    const no=document.createElement('span');no.className='no';no.textContent=c.back?'':(i+1);d.appendChild(no);
+    if(c.logo){const im=document.createElement('img');im.className='lg';im.loading='lazy';im.referrerPolicy='no-referrer';im.onerror=()=>im.remove();im.src=c.logo;d.appendChild(im)}
+    d.appendChild(a);d.appendChild(b);
+    d.onclick=()=>{zone='list';play(i)};
+    fr.appendChild(d);
+  }
+  shown=end;L.appendChild(fr);
+}
+function markFocus(){
+  const it=L.children;
+  for(let i=0;i<it.length;i++)it[i].classList.toggle('focus',i===fi);
+  const el=it[fi];if(el&&zone==='list')el.scrollIntoView({block:'nearest'});
+}
+function setT(c){
+  CAT=c;sub=null;fi=0;grp='';gi=0;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.t===c));
+  refresh();
+}
+function afterLoad(){
+  closeDlg();
+  sub=null;fi=0;grp='';gi=0;
+  if(!A.some(x=>x.t===CAT)){const f=['live','movie','series','radio'].find(c=>A.some(x=>x.t===c));if(f){setT(f);return}}
+  refresh();
+}
+// ---------- شبكة ----------
+const pend={};let seq=0;
+window.__nat=(id,st,body)=>{const p=pend[id];if(!p)return;delete pend[id];(st>=200&&st<400)?p.res(body):p.rej(new Error('HTTP '+st+' '+String(body).slice(0,80)))};
+window.__natBig=(id,st,len)=>{
+  const p=pend[id];if(!p)return;delete pend[id];
+  if(!(st>=200&&st<400)){window.Android.free(id);p.rej(new Error('HTTP '+st));return}
+  try{const o=[];for(let i=0;i<len;i+=262144)o.push(window.Android.part(id,i,262144));window.Android.free(id);p.res(o.join(''))}
+  catch(e){p.rej(e)}
+};
+function nat(url,headers){return new Promise((res,rej)=>{
+  if(!window.Android||!window.Android.http){rej(new Error('NOAPP'));return}
+  const id='r'+(++seq);pend[id]={res,rej};window.Android.http(id,url,JSON.stringify(headers||{}));
+})}
+async function getText(url){
+  try{
+    const c=new AbortController(),to=setTimeout(()=>c.abort(),40000);
+    try{const r=await fetch(url,{signal:c.signal});if(!r.ok)throw new Error('HTTP '+r.status);return await r.text()}
+    finally{clearTimeout(to)}
+  }catch(e){
+    if(window.Android&&window.Android.http&&!/^HTTP/.test(e.message||''))return await nat(url,{});
+    throw e;
+  }
+}
+// ---------- M3U / TXT ----------
+function classify(s){let t='live';if(/movie|فيلم/i.test(s))t='movie';if(/series|مسلسل/i.test(s))t='series';if(/radio/i.test(s))t='radio';return t}
+function extName(l){let q=false;for(let i=0;i<l.length;i++){const c=l[i];if(c==='"')q=!q;else if(c===','&&!q)return l.slice(i+1).trim()}return ''}
+const isUrl=s=>/^[a-z][a-z0-9+.-]*:\/\//i.test(s);
+function parseList(t){
+  const out=[];
+  if(t.includes('#EXTINF')){
+    let n='',g='',lg='';
+    for(let l of t.split(/\r?\n/)){
+      l=l.trim();if(!l)continue;
+      if(l.startsWith('#EXTINF')){const m=l.match(/group-title="([^"]*)"/i);g=m?m[1]:'';const lm=l.match(/tvg-logo="(https?:[^"]*)"/i);lg=lm?lm[1]:'';n=extName(l)}
+      else if(l[0]==='#')continue;
+      else if(isUrl(l)){out.push({n:n||l,u:l,t:classify(g+' '+n+' '+l),g:g,logo:lg});n='';g='';lg=''}
+    }
+  }else{
+    for(let l of t.split(/\r?\n/)){
+      l=l.trim();if(!l||l[0]==='#')continue;
+      const i=l.indexOf('|');let a=i<0?l:l.slice(0,i).trim(),b=i<0?l:l.slice(i+1).trim();
+      if(!isUrl(a)&&isUrl(b)){const x=a;a=b;b=x}
+      if(isUrl(a))out.push({n:b||a,u:a,t:classify(b+' '+a)});
+    }
+  }
+  return out;
+}
+function loadText(t,src){
+  const r=parseList(t);
+  if(!r.length)return msg('لم يتم العثور على روابط في '+src,1);
+  A=r;X=null;S=null;afterLoad();msg('✅ '+A.length+' عنصر جاهز');
+}
+function loadF(){
+  const f=$('f').files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{loadText(String(rd.result),'الملف');$('f').value=''};
+  rd.onerror=()=>msg('تعذر قراءة الملف',1);
+  rd.readAsText(f);
+}
+async function loadU(){
+  let u=val('mU').trim();if(!u)return msg('أدخل رابط M3U',1);
+  if(!isUrl(u))u='http://'+u;
+  msg('⏳ جاري التحميل...');
+  try{loadText(await getText(u),'الرابط')}catch(e){msg('خطأ: '+(e.message||e),1)}
+}
+// ---------- Xtream ----------
+async function xt(){
+  let h=val('xH').trim();const u=val('xU').trim(),p=val('xP').trim();
+  if(!h||!u||!p)return msg('املأ الحقول',1);
+  if(!isUrl(h))h='http://'+h;h=h.replace(/\/+$/,'');
+  const eu=encodeURIComponent(u),ep=encodeURIComponent(p);
+  const api=`${h}/player_api.php?username=${eu}&password=${ep}&action=`;
+  const get=async a=>{const j=JSON.parse(await getText(api+a));return Array.isArray(j)?j:[]};
+  msg('⏳ جاري التحميل...');
+  const items=[],cn={l:0,m:0,s:0};let firstErr=null;
+  const jobs=[['get_live_streams','l',x=>({n:String(x.name||x.stream_id),u:`${h}/live/${eu}/${ep}/${x.stream_id}.m3u8`,t:'live'})],
+    ['get_vod_streams','m',x=>({n:String(x.name||x.stream_id),u:`${h}/movie/${eu}/${ep}/${x.stream_id}.${x.container_extension||'mp4'}`,t:'movie'})],
+    ['get_series','s',x=>({n:String(x.name||x.series_id),t:'series',kind:'series',sid:x.series_id})]];
+  for(const [a,key,f] of jobs){
+    try{const arr=await get(a);cn[key]=arr.length;for(const x of arr)items.push(f(x))}catch(e){firstErr=firstErr||e}
+  }
+  if(!items.length)return msg('فشل: تحقق من البيانات أو الاتصال'+(firstErr?' ('+(firstErr.message||firstErr)+')':''),1);
+  A=items;X={h,u:eu,p:ep};S=null;afterLoad();
+  msg(`✅ Xtream: ${cn.l} مباشر • ${cn.m} فيلم • ${cn.s} مسلسل`);
+}
+async function openSeries(c){
+  if(!X)return;
+  info('⏳ '+c.n);
+  try{
+    const j=JSON.parse(await getText(`${X.h}/player_api.php?username=${X.u}&password=${X.p}&action=get_series_info&series_id=${encodeURIComponent(c.sid)}`));
+    const E=j.episodes||{},eps=[];
+    Object.keys(E).sort((a,b)=>a-b).forEach(k=>{(Array.isArray(E[k])?E[k]:[]).forEach(e=>{
+      eps.push({n:`S${e.season||k} E${e.episode_num||''} - ${e.title||e.id}`,u:`${X.h}/series/${X.u}/${X.p}/${e.id}.${e.container_extension||'mp4'}`,t:'series'});
+    })});
+    if(!eps.length)return info('لا توجد حلقات');
+    sub={items:eps};fi=0;refresh();info(''+c.n);
+  }catch(e){info('⚠ تعذر تحميل الحلقات')}
+}
+// ---------- Stalker (يعمل داخل التطبيق فقط) ----------
+async function stalker(){
+  if(!window.Android)return msg('Stalker يعمل داخل التطبيق فقط',1);
+  let raw=val('stP').trim();const mac=val('stM').trim().toUpperCase();
+  if(!raw)return msg('دخل Portal',1);
+  if(!/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(mac))return msg('أدخل عنوان MAC صحيحاً (المسجّل لدى مزوّد الخدمة)',1);
+  if(!isUrl(raw))raw='http://'+raw;
+  const base=raw.replace(/\/+$/,'').replace(/\/c$/i,'');
+  const hd={Cookie:`mac=${mac}; stb_lang=en; timezone=GMT`,'User-Agent':UA,'X-User-Agent':'Model: MAG250; Link: WiFi'};
+  msg('⏳ اتصال بالبوابة...');
+  let api=null,token=null;
+  const pth=val('stPath').trim();
+  const cands=pth?[base+(pth[0]==='/'?'':'/')+pth]:[base+'/portal.php',base+'/server/load.php',base+'/stalker_portal/server/load.php'];
+  for(const a of cands){
+    try{const j=JSON.parse(await nat(`${a}?type=stb&action=handshake&token=&JsHttpRequest=1-xml`,hd));if(j.js&&j.js.token){api=a;token=j.js.token;break}}catch(e){}
+  }
+  if(!api)return msg('فشل الاتصال بالبوابة أو MAC غير مسجّل',1);
+  const h2=Object.assign({},hd,{Authorization:'Bearer '+token});
+  try{await nat(`${api}?type=stb&action=get_profile&JsHttpRequest=1-xml`,h2)}catch(e){}
+  try{
+    const j=JSON.parse(await nat(`${api}?type=itv&action=get_all_channels&JsHttpRequest=1-xml`,h2));
+    const d=(j.js&&j.js.data)||[];
+    const items=d.filter(c=>c&&c.cmd).map(c=>({n:String(c.name||'قناة'),t:'live',st:{cmd:c.cmd}}));
+    if(!items.length)return msg('لا توجد قنوات (تحقق من الاشتراك)',1);
+    A=items;X=null;S={api,h:h2};afterLoad();msg('✅ Stalker '+A.length+' قناة');
+  }catch(e){msg('خطأ: '+(e.message||e),1)}
+}
+async function stResolve(st){
+  const direct=(st.cmd.match(/https?:\/\/\S+/)||[])[0];
+  try{
+    const j=JSON.parse(await nat(`${S.api}?type=itv&action=create_link&cmd=${encodeURIComponent(st.cmd)}&forced_storage=undefined&disable_ip_check=0&JsHttpRequest=1-xml`,S.h));
+    const m=String((j.js&&j.js.cmd)||'').match(/https?:\/\/\S+/);
+    if(m)return m[0];
+  }catch(e){}
+  if(direct)return direct;
+  throw new Error('no link');
+}
+// ---------- التشغيل ----------
+function stopP(){
+  v.onerror=null;
+  if(H){try{H.destroy()}catch(e){}H=null}
+  v.removeAttribute('src');try{v.load()}catch(e){}
+}
+function fail(name){info('⚠ تعذر تشغيل: '+name)}
+function hlsPlay(url,my,name){
+  H=new Hls({maxBufferLength:10});
+  let netTry=false,medTry=false;
+  H.on(Hls.Events.MANIFEST_PARSED,()=>{const p=v.play();if(p&&p.catch)p.catch(()=>{})});
+  H.on(Hls.Events.ERROR,(e,d)=>{
+    if(my!==tok||!d||!d.fatal)return;
+    if(d.type===Hls.ErrorTypes.NETWORK_ERROR&&!netTry){netTry=true;H.startLoad()}
+    else if(d.type===Hls.ErrorTypes.MEDIA_ERROR&&!medTry){medTry=true;H.recoverMediaError()}
+    else fail(name);
+  });
+  H.attachMedia(v);H.loadSource(url);
+}
+function nativePlay(url,my,name){
+  let tried=false;
+  v.onerror=()=>{
+    if(my!==tok)return;
+    if(!tried&&typeof Hls!=='undefined'&&Hls.isSupported()){tried=true;v.onerror=null;hlsPlay(url,my,name)}
+    else fail(name);
+  };
+  v.src=url;const p=v.play();if(p&&p.catch)p.catch(()=>{});
+}
+let fsT;
+function showInfo(){const i=$('info');i.classList.add('show');clearTimeout(fsT);fsT=setTimeout(()=>i.classList.remove('show'),4000)}
+function enterFs(){fs=true;document.body.classList.add('fs');showInfo()}
+function exitFs(){fs=false;document.body.classList.remove('fs');$('info').classList.remove('show')}
+window.__back=()=>{if(dlgOpen){closeDlg();return true}if(fs){exitFs();return true}if(sub){sub=null;fi=0;refresh();return true}return false};
+function useNative(url){
+  if(!window.Android||!window.Android.playNative)return false;
+  if(eng==='exo')return true;
+  if(eng==='web')return false;
+  return !/m3u8/i.test(url);
+}
+function startPlay(url,my,name){
+  stopP();
+  if(useNative(url)){window.Android.playNative(url,name);return}
+  enterFs();
+  if(/m3u8/i.test(url)&&typeof Hls!=='undefined'&&Hls.isSupported())hlsPlay(url,my,name);
+  else nativePlay(url,my,name);
+}
+async function play(i){
+  const c=V[i];if(!c)return;
+  if(c.back){sub=null;fi=0;refresh();return}
+  if(c.kind==='series'){openSeries(c);return}
+  fi=i;markFocus();
+  const my=++tok;info('▶ '+c.n);
+  let url=c.u;
+  if(c.st){
+    if(!S)return fail(c.n);
+    try{url=await stResolve(c.st)}catch(e){if(my===tok)fail(c.n);return}
+    if(my!==tok)return;
+  }
+  startPlay(url,my,c.n);
+}
+// ---------- ريموت ----------
+let dlgOpen=false,dlgKind='';
+const FORMS={m3u:['f-m3u','M3U'],xt:['f-xt','Xtream'],st:['f-st','Stalker'],set:['f-set','الإعدادات']};
+const NAV=()=>dlgOpen?[...$('dlg').querySelectorAll('[data-d]')].filter(e=>{const f=e.closest('.form');return !f||f.id===FORMS[dlgKind][0]}):[...document.querySelectorAll('[data-nav]')];
+function openDlg(k){
+  dlgOpen=true;dlgKind=k;$('dlg').classList.add('open');$('dt').textContent=FORMS[k][1];
+  document.querySelectorAll('.form').forEach(f=>f.style.display=f.id===FORMS[k][0]?'':'none');
+  $('log').textContent='';pi=0;setZone('panel');
+}
+function closeDlg(){if(!dlgOpen)return;dlgOpen=false;$('dlg').classList.remove('open');if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();pi=0;setZone('list')}
+function dlgOk(){
+  if(dlgKind==='m3u')loadU();else if(dlgKind==='xt')xt();else if(dlgKind==='st')stalker();else closeDlg();
+}
+const THEMES=['default','dz','cinema','video'],THL={default:'أزرق',dz:'الجزائر',cinema:'سينمائي أحمر',video:'فيديو رمادي'};
+let theme='default';
+function setTheme(t){theme=t;document.body.dataset.theme=t==='default'?'':t;$('thB').textContent='التيمة: '+THL[t];ls('sdz_theme',t)}
+function setZone(z){
+  zone=z;
+  document.querySelectorAll('.nf').forEach(e=>e.classList.remove('nf'));
+  if(z==='panel'){const n=NAV();pi=Math.max(0,Math.min(pi,n.length-1));n[pi].classList.add('nf');n[pi].scrollIntoView({block:'nearest'})}
+  markFocus();markG();
+}
+function activate(el){
+  if(el.tagName==='INPUT'){el.focus()}else el.click();
+}
+function move(d){
+  if(!V.length)return;
+  const n=Math.max(0,Math.min(fi+d,V.length-1));
+  while(n>=shown&&shown<V.length)appendMore();
+  fi=n;markFocus();
+}
+const KC={38:'ArrowUp',40:'ArrowDown',37:'ArrowLeft',39:'ArrowRight',13:'Enter',166:'ChannelUp',167:'ChannelDown',183:'Red',403:'Red',82:'ContextMenu'};
+// ---------- وضع الماوس ----------
+let mouseOn=false,mx=Math.round(innerWidth/2),my=Math.round(innerHeight/2),mvStep=12;
+const cur=$('cur');
+function placeCur(){cur.style.left=mx+'px';cur.style.top=my+'px'}
+function setMouse(on){
+  mouseOn=on;cur.style.display=on?'block':'none';
+  $('msB').textContent='وضع الماوس: '+(on?'تشغيل':'إيقاف');
+  if(on)placeCur();
+  ls('sdz_mouse',on?'1':'0');
+}
+function toggleMouse(){setMouse(!mouseOn);msg(mouseOn?'وضع الماوس مفعّل: الأسهم تحرك المؤشر، OK نقر، CH+/CH- تمرير. زر 0 للإيقاف':'وضع الماوس متوقف')}
+function scrollAt(dy){
+  let e=document.elementFromPoint(mx,my);
+  while(e&&e!==document.documentElement){
+    const o=getComputedStyle(e).overflowY;
+    if((o==='auto'||o==='scroll')&&e.scrollHeight>e.clientHeight){e.scrollTop+=dy;return}
+    e=e.parentElement;
+  }
+}
+function mouseClick(){
+  const el=document.elementFromPoint(mx,my);if(!el)return;
+  if(el.tagName==='VIDEO'){if(v.paused){const p=v.play();if(p&&p.catch)p.catch(()=>{})}else v.pause();return}
+  if(el.tagName==='INPUT'&&el.type!=='file'){el.focus();return}
+  el.click();
+}
+function mouseKey(k,e){
+  const D={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};
+  if(D[k]){
+    e.preventDefault();
+    mvStep=e.repeat?Math.min(mvStep+5,70):12;
+    mx=Math.max(0,Math.min(innerWidth-2,mx+D[k][0]*mvStep));
+    my=Math.max(0,Math.min(innerHeight-2,my+D[k][1]*mvStep));
+    placeCur();
+    if(D[k][1]&&(my<=20||my>=innerHeight-22))scrollAt(D[k][1]*60);
+  }else if(k==='Enter'){e.preventDefault();if(!e.repeat)mouseClick()}
+  else if(k==='ChannelUp'||k==='PageUp'){e.preventDefault();scrollAt(-200)}
+  else if(k==='ChannelDown'||k==='PageDown'){e.preventDefault();scrollAt(200)}
+}
+document.addEventListener('keyup',()=>{mvStep=12});
+document.addEventListener('keydown',e=>{
+  const k=e.key&&e.key!=='Unidentified'?e.key:KC[e.keyCode];
+  if(!k)return;
+  if(k==='Escape'&&dlgOpen){closeDlg();return}
+  const a=document.activeElement,inInp=a&&a.tagName==='INPUT';
+  if(!inInp&&(k==='0'||k==='ContextMenu'||k==='Red')){e.preventDefault();toggleMouse();return}
+  if(mouseOn&&!inInp){mouseKey(k,e);return}
+  if(fs&&!inInp){
+    if(k==='ArrowUp'||k==='ChannelUp'){e.preventDefault();window.__zap(-1)}
+    else if(k==='ArrowDown'||k==='ChannelDown'){e.preventDefault();window.__zap(1)}
+    else if(k==='Enter'){e.preventDefault();showInfo()}
+    return;
+  }
+  if(a&&a.tagName==='INPUT'){
+    pi=Math.max(0,NAV().indexOf(a));
+    if(k==='ArrowDown'||k==='ArrowUp'||k==='Enter'){
+      e.preventDefault();a.blur();
+      if(k==='Enter'&&a.id==='s'){setZone('list');return}
+      if(!dlgOpen){setZone(k==='ArrowUp'?'panel':'list');return}
+      const n=NAV().length;pi=Math.max(0,Math.min(pi+(k==='ArrowUp'?-1:1),n-1));setZone('panel');
+    }
+    return;
+  }
+  if(zone==='panel'){
+    const n=NAV();
+    if(dlgOpen){
+      if(k==='ArrowDown')pi=Math.min(pi+1,n.length-1);
+      else if(k==='ArrowUp')pi=Math.max(pi-1,0);
+      else if(k==='Enter'){e.preventDefault();activate(n[pi]);return}
+      else return;
+    }else{
+      // الشريط العلوي أفقي ومن اليمين لليسار: ← = العنصر التالي، → = السابق
+      if(k==='ArrowLeft')pi=Math.min(pi+1,n.length-1);
+      else if(k==='ArrowRight')pi=Math.max(pi-1,0);
+      else if(k==='ArrowDown'){e.preventDefault();setZone('list');return}
+      else if(k==='ArrowUp'){e.preventDefault();return}
+      else if(k==='Enter'){e.preventDefault();activate(n[pi]);return}
+      else return;
+    }
+    e.preventDefault();setZone('panel');
+  }else if(zone==='groups'){
+    const n=$('gitems').children.length;
+    if(k==='ArrowDown'){e.preventDefault();gi=Math.min(gi+1,n-1);markG()}
+    else if(k==='ArrowUp'){e.preventDefault();if(gi===0)setZone('panel');else{gi--;markG()}}
+    else if(k==='Enter'){e.preventDefault();if($('gitems').children[gi])$('gitems').children[gi].click();setZone('list')}
+    else if(k==='ArrowLeft'){e.preventDefault();setZone('list')}
+    else if(k==='ArrowRight'){e.preventDefault();setZone('panel')}
+  }else{
+    if(k==='ArrowDown'){e.preventDefault();move(1)}
+    else if(k==='ArrowUp'){e.preventDefault();if(fi===0)setZone('panel');else move(-1)}
+    else if(k==='Enter'){e.preventDefault();play(fi)}
+    else if(k==='ArrowRight'){e.preventDefault();if(GS.length)setZone('groups');else setZone('panel')}
+  }
+});
+window.__zap=n=>{
+  zone='list';let j=fi+n;
+  while(j>=0&&j<V.length&&(V[j].back||V[j].kind==='series'))j+=n;
+  if(j<0||j>=V.length)return;
+  while(j>=shown&&shown<V.length)appendMore();
+  play(j);
+};
+// ---------- الإعدادات والحفظ ----------
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){}return null}
+const SAVE=['mU','stP','stM','stPath','xH','xU','xP'];
+SAVE.forEach(id=>{const x=ls('sdz_'+id);if(x)$(id).value=x;$(id).addEventListener('input',()=>ls('sdz_'+id,$(id).value))});
+const ENG=['auto','web','exo'],ENGL={auto:'تلقائي',web:'WebView',exo:'ExoPlayer'};
+eng=ENG.includes(ls('sdz_eng'))?ls('sdz_eng'):'auto';
+function engLabel(){$('engB').textContent='المشغّل: '+ENGL[eng]}
+if(window.Android&&window.Android.playNative){
+  engLabel();
+  $('engB').onclick=()=>{eng=ENG[(ENG.indexOf(eng)+1)%ENG.length];ls('sdz_eng',eng);engLabel();
+    msg(eng==='auto'?'تلقائي: ExoPlayer لروابط TS/MKV/MP4 وWebView لـ m3u8':eng==='exo'?'ExoPlayer لكل الروابط':'WebView لكل الروابط')};
+}else $('engB').remove();
+$('clB').onclick=()=>{SAVE.forEach(id=>{ls('sdz_'+id,null);$(id).value=''});ls('sdz_eng',null);ls('sdz_theme',null);setTheme('default');eng='auto';if($('engB'))engLabel();msg('تم مسح البيانات المحفوظة')};
+// ---------- ربط الواجهة ----------
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>setT(t.dataset.t));
+let sT;$('s').addEventListener('input',()=>{clearTimeout(sT);sT=setTimeout(()=>{query=val('s');fi=0;refresh()},200)});
+$('msB').onclick=toggleMouse;
+if(ls('sdz_mouse')==='1')setMouse(true);
+$('fb').onclick=()=>$('f').click();
+$('f').onchange=loadF;
+$('bM').onclick=()=>openDlg('m3u');$('bX').onclick=()=>openDlg('xt');$('bS').onclick=()=>openDlg('st');$('bT').onclick=()=>openDlg('set');
+$('dok').onclick=dlgOk;$('dno').onclick=closeDlg;
+$('thB').onclick=()=>setTheme(THEMES[(THEMES.indexOf(theme)+1)%THEMES.length]);
+setTheme(THEMES.includes(ls('sdz_theme'))?ls('sdz_theme'):'default');
+refresh();
+</script></body></html>

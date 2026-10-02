@@ -1,0 +1,34 @@
+name: Build APK
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Arrange files
+        run: |
+          if [ -f root-build.gradle ]; then
+            mkdir -p app/src/main/java/dz/stream/tv app/src/main/assets app/src/main/res/values app/src/main/res/drawable
+            mv root-build.gradle build.gradle
+            mv app-build.gradle app/build.gradle
+            mv AndroidManifest.xml app/src/main/
+            mv MainActivity.java PlayerActivity.java app/src/main/java/dz/stream/tv/
+            mv index.html hls.min.js app/src/main/assets/
+            mv styles.xml app/src/main/res/values/
+            mv ic_launcher.xml banner.xml app/src/main/res/drawable/
+          fi
+          find . -path ./.git -prune -o -type f -print | sort
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.2'
+      - run: gradle assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: StreamDZ-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
